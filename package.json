@@ -1,0 +1,29 @@
+{
+  "name": "wind-widget",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A Windows desktop widget showing hourly wind speed, gusts and direction from Open-Meteo.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "node --test tests/forecast.test.ts",
+    "render-chart": "node scripts/render-chart.ts",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.12.4",
+    "@tauri-apps/plugin-autostart": "^2.7.0",
+    "@tauri-apps/plugin-notification": "^2.8.0",
+    "@tauri-apps/plugin-opener": "^2.7.2",
+    "echarts": "^6.1.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.12.4",
+    "@types/node": "^22.20.5",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.5"
+  }
+}

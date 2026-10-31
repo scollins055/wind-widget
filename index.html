@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wind Widget</title>
+</head>
+<body>
+<div id="widget" class="widget">
+
+  <header id="bar" class="bar" data-tauri-drag-region>
+    <div class="bar-left" data-tauri-drag-region>
+      <button id="loc-btn" class="loc-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Change location">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9CC6E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2"/></svg>
+        <span id="loc-name">Choose a location</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A9AAA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <span id="updated" class="updated" data-tauri-drag-region></span>
+    </div>
+    <div class="bar-right">
+      <button id="refresh-btn" class="icon-btn" type="button" aria-label="Refresh now" title="Refresh now">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+      </button>
+      <button id="settings-btn" class="icon-btn" type="button" aria-label="Settings" title="Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.2" fill="#0E151C"/><circle cx="15" cy="17" r="2.2" fill="#0E151C"/></svg>
+      </button>
+      <button id="mode-btn" class="icon-btn" type="button" aria-label="Collapse to compact" title="Compact view">
+        <svg class="mode-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="loc-menu" class="menu" role="menu" hidden></div>
+  <div id="banner" class="banner" role="status" hidden></div>
+
+  <!-- Expanded view -->
+  <main id="expanded" class="expanded">
+    <div id="empty" class="empty" hidden>
+      <p class="empty-title">Where should the wind forecast be for?</p>
+      <button id="empty-btn" class="primary-btn" type="button">Choose a location</button>
+    </div>
+
+    <section id="now" class="now" aria-label="Current conditions">
+      <div class="stat">
+        <span class="stat-label">Wind now</span>
+        <div class="big"><span id="now-s" class="big-num">–</span><span class="big-unit unit-label">mph</span></div>
+        <span id="now-level" class="level-text"></span>
+      </div>
+      <div class="stat gust-stat">
+        <span class="stat-label">Gusts</span>
+        <div class="gust"><span id="now-g" class="gust-num">–</span><span class="small-unit unit-label">mph</span></div>
+      </div>
+      <div class="compass-wrap">
+        <svg width="96" height="96" viewBox="0 0 96 96" role="img" id="compass" aria-label="Wind direction">
+          <circle cx="48" cy="48" r="35" fill="#121B24" stroke="#2A3845" stroke-width="1.5"/>
+          <line x1="48" y1="13" x2="48" y2="18" stroke="#4A5A68" stroke-width="1.5"/>
+          <line x1="48" y1="78" x2="48" y2="83" stroke="#4A5A68" stroke-width="1.5"/>
+          <line x1="13" y1="48" x2="18" y2="48" stroke="#4A5A68" stroke-width="1.5"/>
+          <line x1="78" y1="48" x2="83" y2="48" stroke="#4A5A68" stroke-width="1.5"/>
+          <text x="48" y="9" text-anchor="middle" font-size="9" font-weight="600" fill="#B7C4D0">N</text>
+          <text x="48" y="95" text-anchor="middle" font-size="9" fill="#8A9AAA">S</text>
+          <text x="91" y="51" text-anchor="middle" font-size="9" fill="#8A9AAA">E</text>
+          <text x="5" y="51" text-anchor="middle" font-size="9" fill="#8A9AAA">W</text>
+          <g id="compass-arrow"><path d="M48,20 L55,40 L50,37.5 L50,76 L46,76 L46,37.5 L41,40 Z" fill="#9CC6E8"/></g>
+        </svg>
+        <div class="from">
+          <span class="stat-label">From</span>
+          <span id="now-card" class="from-card">–</span>
+          <span id="now-deg" class="muted small"></span>
+        </div>
+      </div>
+      <div class="peak">
+        <span class="stat-label">Next 24 h peak gust</span>
+        <span id="peak" class="peak-val">–</span>
+        <div id="alert" class="alert" hidden>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F2A541" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3z"/><path d="M12 10v4"/><path d="M12 17v.5"/></svg>
+          <span id="alert-text"></span>
+        </div>
+      </div>
+    </section>
+
+    <section id="days" class="days" aria-label="Daily forecast"></section>
+
+    <section id="graph" class="graph" aria-label="Hourly wind graph">
+      <div class="graph-head">
+        <div class="legend">
+          <span class="graph-title">Hourly wind</span>
+          <span class="legend-item"><svg width="18" height="6" aria-hidden="true"><line x1="0" y1="3" x2="18" y2="3" stroke="#4EA8DE" stroke-width="3"/></svg>Sustained</span>
+          <span class="legend-item"><svg width="18" height="6" aria-hidden="true"><line x1="0" y1="3" x2="18" y2="3" stroke="#F2A541" stroke-width="2" stroke-dasharray="4 3"/></svg>Gusts</span>
+          <span class="legend-item"><svg width="12" height="14" viewBox="-6 -9 12 18" aria-hidden="true"><path d="M0,-8 L5,-1 L1.7,-2 L1.7,8 L-1.7,8 L-1.7,-2 L-5,-1 Z" fill="#B7C4D0"/></svg>Blowing toward</span>
+        </div>
+        <div class="graph-controls">
+          <button id="pan-prev" class="icon-btn sm" type="button" aria-label="Earlier">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+          </button>
+          <button id="pan-next" class="icon-btn sm" type="button" aria-label="Later">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+          <div class="seg" role="group" aria-label="Graph range">
+            <button id="range-short" type="button">48 h</button>
+            <button id="range-all" type="button">7 days</button>
+          </div>
+        </div>
+      </div>
+      <div id="readout" class="readout"></div>
+      <div id="chart" class="chart"></div>
+      <div class="graph-foot">
+        <span id="tz-note"></span>
+        <a id="attribution" href="https://open-meteo.com/">Weather data by Open-Meteo.com</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Compact view -->
+  <main id="compact" class="compact" hidden>
+    <div class="c-now">
+      <div class="big"><span id="c-now-s" class="c-big-num">–</span><span class="c-unit unit-label">mph</span></div>
+      <div class="c-gust"><span class="stat-label">Gusts</span><span id="c-now-g" class="c-gust-num">–</span></div>
+      <div class="c-dir">
+        <svg width="44" height="44" viewBox="0 0 96 96" role="img" id="c-compass" aria-label="Wind direction">
+          <circle cx="48" cy="48" r="42" fill="#121B24" stroke="#2A3845" stroke-width="3"/>
+          <text x="48" y="22" text-anchor="middle" font-size="16" font-weight="600" fill="#B7C4D0">N</text>
+          <g id="c-compass-arrow"><path d="M48,26 L58,46 L51,43 L51,76 L45,76 L45,43 L38,46 Z" fill="#9CC6E8"/></g>
+        </svg>
+        <div class="from"><span class="stat-label">From</span><span id="c-now-card" class="c-card">–</span></div>
+      </div>
+    </div>
+    <div id="c-days" class="c-days"></div>
+    <span class="c-note">Daily peak wind · G = peak gust, <span class="unit-label">mph</span></span>
+  </main>
+
+  <!-- Settings -->
+  <div id="settings" class="overlay" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+    <div class="sheet-head">
+      <h2 id="settings-title">Widget settings</h2>
+      <button id="settings-close" class="icon-btn" type="button" aria-label="Close settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body">
+      <section class="field">
+        <label for="loc-search" class="section-label">Location</label>
+        <div class="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A9AAA" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>
+          <input id="loc-search" type="search" placeholder="Search city, ZIP or place" autocomplete="off" spellcheck="false" />
+        </div>
+        <div id="search-results" class="results" hidden></div>
+        <p id="search-msg" class="muted small" hidden></p>
+        <button id="geo-btn" class="ghost-btn" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          Use my current location
+        </button>
+      </section>
+
+      <section class="field">
+        <span class="section-label">Favorites</span>
+        <div id="fav-list" class="fav-list"></div>
+      </section>
+
+      <section class="field">
+        <span class="section-label">Wind units</span>
+        <div id="unit-seg" class="seg seg-4" role="group" aria-label="Wind units">
+          <button type="button" data-value="mph">mph</button>
+          <button type="button" data-value="kn">knots</button>
+          <button type="button" data-value="kmh">km/h</button>
+          <button type="button" data-value="ms">m/s</button>
+        </div>
+      </section>
+
+      <section class="field">
+        <span class="section-label">Forecast length</span>
+        <div id="days-seg" class="seg seg-4" role="group" aria-label="Forecast length">
+          <button type="button" data-value="3">3 days</button>
+          <button type="button" data-value="7">7 days</button>
+          <button type="button" data-value="10">10 days</button>
+          <button type="button" data-value="16">16 days</button>
+        </div>
+        <p id="len-note" class="muted small"></p>
+      </section>
+
+      <section class="field">
+        <span class="section-label">Thresholds</span>
+        <div class="row">
+          <label for="th-windy">Sustained wind turns “Windy”</label>
+          <span class="num-wrap"><input id="th-windy" type="number" min="1" max="300" step="1" /><span class="unit-label">mph</span></span>
+        </div>
+        <div class="row">
+          <label for="th-gust">Gust limit (line on graph)</label>
+          <span class="num-wrap"><input id="th-gust" type="number" min="1" max="400" step="1" /><span class="unit-label">mph</span></span>
+        </div>
+        <label class="row check"><span>Notify me when gusts will pass the limit in the next 24 h</span><input id="opt-notify" type="checkbox" /></label>
+      </section>
+
+      <section class="field">
+        <span class="section-label">Updates</span>
+        <div class="row"><span>Refresh forecast</span><span class="muted">Every 12 hours</span></div>
+        <label class="row check"><span>Also refresh after the PC wakes up</span><input id="opt-wake" type="checkbox" /></label>
+      </section>
+
+      <section class="field">
+        <span class="section-label">Appearance &amp; startup</span>
+        <div class="row stack">
+          <div class="row-inline"><label for="opt-opacity">Background opacity</label><span id="opacity-val" class="muted"></span></div>
+          <input id="opt-opacity" type="range" min="40" max="100" step="1" />
+        </div>
+        <label class="row check"><span>Keep behind other windows</span><input id="opt-behind" type="checkbox" /></label>
+        <label class="row check"><span>Lock position</span><input id="opt-lock" type="checkbox" /></label>
+        <label class="row check"><span>Launch when Windows starts</span><input id="opt-login" type="checkbox" /></label>
+      </section>
+
+      <p class="muted small">Weather data by Open-Meteo.com, licensed CC BY 4.0. Free for non-commercial use.</p>
+    </div>
+    <div class="sheet-foot">
+      <button id="settings-done" class="primary-btn" type="button">Done</button>
+    </div>
+  </div>
+</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
