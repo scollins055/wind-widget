@@ -1,7 +1,7 @@
 {
   "name": "wind-widget",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Windows desktop widget showing hourly wind speed, gusts and direction from Open-Meteo.",
   "type": "module",
   "license": "MIT",

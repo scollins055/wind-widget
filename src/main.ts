@@ -248,7 +248,7 @@ function renderHeader(): void {
   } else banner.hidden = true;
 
   // Dragging the header moves the widget, unless the position is locked.
-  for (const id of ['bar', 'updated']) {
+  for (const id of ['bar', 'updated', 'settings-head', 'settings-title']) {
     const el = $(id);
     if (s.lockPosition) el.removeAttribute('data-tauri-drag-region');
     else el.setAttribute('data-tauri-drag-region', '');

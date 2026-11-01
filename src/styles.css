@@ -50,7 +50,10 @@ button { cursor: pointer; }
   overflow: hidden;
 }
 .widget.is-compact { width: 380px; height: 260px; }
-/* In the app the window is sized to match each mode (see platform.setWindowSize). */
+/* In the app the window is sized to match each mode (see platform.setWindowSize).
+   Never draw past the window's edges, so the header and footer stay reachable
+   even if a resize doesn't happen. */
+html.tauri .widget { max-width: 100vw; max-height: 100vh; }
 
 /* Header */
 .bar {

@@ -17,15 +17,28 @@ async function currentWindow() {
   return getCurrentWindow();
 }
 
+/**
+ * How much bigger the page is drawn than the window's own pixels. Windows'
+ * "Text size" setting (Accessibility) enlarges the whole web view, e.g. 1.1
+ * at 110%, so a 720 px layout needs a 792 px window.
+ */
+async function pageZoom(w: Awaited<ReturnType<typeof currentWindow>>): Promise<number> {
+  const inner = (await w.innerSize()).toLogical(await w.scaleFactor());
+  const zoom = window.innerWidth > 0 ? inner.width / window.innerWidth : 1;
+  return Number.isFinite(zoom) && zoom > 0.5 && zoom < 4 ? Math.round(zoom * 100) / 100 : 1;
+}
+
+/** Size the window to fit a layout of `width` x `height` CSS pixels. */
 export function setWindowSize(width: number, height: number): Promise<void> {
   return safely('resize', async () => {
     if (!isTauri) return;
     const { LogicalSize } = await import('@tauri-apps/api/dpi');
     const w = await currentWindow();
+    const zoom = await pageZoom(w);
     // Users can't resize the widget, but some window managers also refuse
     // programmatic resizes of a fixed-size window, so unlock it briefly.
     await w.setResizable(true);
-    await w.setSize(new LogicalSize(width, height));
+    await w.setSize(new LogicalSize(Math.ceil(width * zoom), Math.ceil(height * zoom)));
     await w.setResizable(false);
   });
 }
